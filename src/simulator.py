@@ -39,6 +39,29 @@ def decoder(pc_instructions):
         print("Decoder: Could not decode instructions!")
 
 
+def controller(decoded_instr):
+    opcode = decoded_instr["opcode"]
+    funct = decoded_instr.get("funct", None)
+    ctrl_signals = {
+        "RegDst": 0,
+        "Branch": 0,
+        "MemRead": 0,
+        "MemToReg": 0,
+        "ALUOp": "00",
+        "RegWrite": 0,
+        "ALUSrc": 0,
+        "MemWrite": 0,
+    }
+    # addi
+    if opcode == 0x08:  
+        ctrl_signals["ALUSrc"] = 1
+        ctrl_signals
+    # legg til flere etterhvert...
+    else:
+        print(f"Unsupported opcode {hex(opcode)}")
+
+    return ctrl_signals
+
 
 def runSimulator(sim):
     # Replace this with your own main loop!
@@ -73,7 +96,12 @@ def runSimulator(sim):
 
         decoded_instructions = decoder(instr)
 
-        print("Dekodet instruksjon:", decoded_instructions)
+
+        controller(decoded_instructions)
+        signals = controller(decoded_instructions)
+        print(f"Instruksjon: {decoded_instructions}")
+        print(f"Kontrollsignaler: {signals}")
+        # print("Dekodet instruksjon:", decoded_instructions)
 
 
 
