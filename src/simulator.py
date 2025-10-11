@@ -51,7 +51,8 @@ def controller(decoded_instr):
         "RegWrite": 0,
         "ALUSrc": 0,
         "MemWrite": 0,
-        "Jumo": 0
+        "Jump": 0,
+        "Break": 0,
     }
 # R type instructions
     if opcode == 0x00 and funct == 0x20:
@@ -97,12 +98,12 @@ def controller(decoded_instr):
         ctrl_signals["ALUOp"] = "addiu"
     elif opcode == 0x23:
         ctrl_signals["RegWrite"] = 1
-        ctrl_signals["AluSrc"] = 1
+        ctrl_signals["ALUSrc"] = 1
         ctrl_signals["MemRead"] = 1
         ctrl_signals["MemToReg"] = 1
         ctrl_signals["ALUOp"] = "lw"
     elif opcode == 0x2B:
-        ctrl_signals["AluSrc"] = 1
+        ctrl_signals["ALUSrc"] = 1
         ctrl_signals["MemWrite"] = 1
         ctrl_signals["ALUOp"] = "sw"
     elif opcode == 0x04:
@@ -121,6 +122,7 @@ def controller(decoded_instr):
         ctrl_signals["ALUOp"] = "jump"
 # Break
     elif opcode == 0x00 and funct == 0x0D:
+        ctrl_signals["Break"] = 1
         pass
     else:
         print(f"Unsupported opcode {hex(opcode)}")
@@ -131,8 +133,7 @@ def controller(decoded_instr):
 def runSimulator(sim):
     # Replace this with your own main loop!
     counter = 0
-    while (counter < 4):
-        sim.tick()
+    while (True):
         # print(sim.dataMemory.memory)
         pc_val = sim.pc.currentAddress()
         converted_adress = (pc_val - (pc_val % 4))
@@ -152,21 +153,23 @@ def runSimulator(sim):
 #
         #if(converted_adress in memory):
         #     print(f"pc value = {hex(pc_val)} found in memory")
-        #else:
+        #else:  
         #     print(f"pc value = {hex(pc_val)} not found in memory")
 
         pc_value = sim.pc.getOutputValue("pcAddress")
 
         pc_instructions = sim.instructionMemory.getOutputValue("instruction")
-
+        print(f"PC: {converted_adress}  Instr: {hex(instr)}")
         decoded_instructions = decoder(instr)
 
-
-        controller(decoded_instructions)
         signals = controller(decoded_instructions)
-        print(f"Instruksjon: {decoded_instructions}")
-        print(f"Kontrollsignaler: {signals}")
+        # print(f"Instruksjon: {decoded_instructions}")
+        # print(f"Kontrollsignaler: {signals}")
+        if(signals.get("Break") == 1):
+            print("break encountered")
+            break
         # print("Dekodet instruksjon:", decoded_instructions)
+        sim.tick()
 
 
 

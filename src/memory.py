@@ -51,7 +51,7 @@ class Memory(CPUElement):
                     # print(self.memory)
                     # print(f"adress {hex(address)} value {hex(value)} ")
 
-                    self.memory[address] = value
+                    # self.memory[address] = value
                 except ValueError:
                     # ignore malformed lines
                     continue
