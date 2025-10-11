@@ -39,7 +39,7 @@ class Memory(CPUElement):
                     
                     continue
 
-                parts = line.strip().split()
+                parts = line.strip().split("\t")
                 if len(parts) < 2:
                     continue
 

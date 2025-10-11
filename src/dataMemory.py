@@ -8,7 +8,9 @@ from cpuElement import CPUElement
 from memory import Memory
 import common
 
-class DataMemory(Memory):
+#USED FOR SW AND LW. DELETE THIS COMMENT WHEN FINISHING ASSIGNEMENT
+
+class DataMemory(Memory): 
     def __init__(self, filename):
         Memory.__init__(self, filename)
         
