@@ -5,17 +5,13 @@ class ControlUnit(CPUElement):
         super().__init__()
 
     def connect(self, input, outputValueNames, control, outputSignalNames):
-        super().connect(input, outputValueNames, control, outputSignalNames)
         self.instruction = list(self.inputValues.keys())[0]
-        # return super().connect(input, outputValueNames, control, outputSignalNames) //orginal slettet
-    
-    def setupControllSignals(self):
-        opcode = self.inputValues[self.inputSources]
+        return super().connect(input, outputValueNames, control, outputSignalNames)
 
     def writeOutput(self):
-        instr = self.inputValues[self.instruction] # HENTET FRA GPT
-        opcode = (instr >> 26) & 0x3F # HENTET FRA GPT
-        funct = instr & 0x3F #HENTET FRA GPT
+        instr = self.inputValues[self.instruction] 
+        opcode = (instr >> 26) & 0x3F 
+        funct = instr & 0x3F
         ctrl_signals = {
             "RegDst": 0,
             "Branch": 0,
@@ -102,35 +98,9 @@ class ControlUnit(CPUElement):
             print(f"Unsupported opcode {hex(opcode)}")
         for name, value in ctrl_signals.items():
             self.outputControlSignals[name] = value
+            print(value)
         return ctrl_signals
     
 
-if __name__ == "__main__":
-    from cpuElement import CPUElement
-
-    class DummyInstr(CPUElement):
-        def __init__(self, instr):
-            super().__init__()
-            self.outputValues = {"instruction": instr}
-
-        def getOutputValue(self, name):
-            return self.outputValues[name]
-
-    # Example: R-type ADD instruction
-    # opcode = 0x00, funct = 0x20 -> add
-    instruction = 0x01398820  # binary for add $s1, $t1, $t9
-
-    instr_source = DummyInstr(instruction)
-    cu = ControlUnit()
-
-    cu.connect([(instr_source, "instruction")], [], [], list([
-        "RegDst", "Branch", "MemRead", "MemToReg",
-        "ALUOp", "RegWrite", "ALUSrc", "MemWrite", "Jump", "Break"
-    ]))
-
-    cu.readInput()
-    cu.writeOutput()
-
-    print("Control signals:")
-    for k, v in cu.outputControlSignals.items():
-        print(f"{k}: {v}")
+if __name__ == '__main__':
+    ControlUnit()

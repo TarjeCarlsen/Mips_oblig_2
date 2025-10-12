@@ -23,15 +23,17 @@ class RegisterFile(CPUElement):
     def connect(self, inputSources, outputValueNames, control, outputSignalNames):
         CPUElement.connect(self, inputSources,
                            outputValueNames, control, outputSignalNames)
-
+        
+        self.inputSources = inputSources
+        self.outputValueNames = outputValueNames
+        self.control = control
+        self.outputSignalNames = outputSignalNames
         # Implement me!
 
     def printAll(self):
         '''
         Print the name and value in each register.
         '''
-
-        print()
         print("Register file")
         print("================")
         for i in range(0, 32):
@@ -40,7 +42,6 @@ class RegisterFile(CPUElement):
         print("================")
         print()
         print()
-
 
 class TestRegisterFile(unittest.TestCase):
     def setUp(self):
@@ -53,4 +54,6 @@ class TestRegisterFile(unittest.TestCase):
 
 
 if __name__ == '__main__':
+    registerFile = RegisterFile()
+    registerFile.printAll()
     unittest.main()
