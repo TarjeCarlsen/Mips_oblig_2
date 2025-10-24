@@ -19,12 +19,15 @@ class CPUElement:
         (sourceObject, outputName) tuple, where sourceObject is an instance of
         CPUElement and outputName is a string containing the name of one of the
         output values provided by the given sourceObject.
+
         @param outputValueNames: List of names (given as strings) for each of the
         output values produces by the current CPUElement instance.
+
         @param control: List of control signal sources. Each source is defined by a 
         (sourceObject, signalName) tuple, where sourceObject is an instance of
         CPUElement and signalName is a string containing the name of one of the
         output control signals provided by the given sourceObject.
+        
         @param outputControlSignalNames: List of names (given as strings) for each of
         the output control signals produced by the current CPUElement instance.
         '''
