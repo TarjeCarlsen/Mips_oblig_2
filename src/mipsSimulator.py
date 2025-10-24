@@ -10,6 +10,7 @@ from instructionMemory import InstructionMemory
 from dataMemory import DataMemory
 from constant import Constant
 from randomControl import RandomControl
+from controlUnit import ControlUnit
 import sys
 
 class MIPSSimulator():
@@ -30,7 +31,6 @@ class MIPSSimulator():
         self.constant3 = Constant(3)
         self.constant4 = Constant(4)
         self.randomControl = RandomControl()
-        self.mux = Mux()
         self.adder = Add()
         self.pc = PC(self.startAddress())
 
@@ -88,6 +88,7 @@ class MIPSSimulator():
             [],
             []
         )
+
 
         
 
