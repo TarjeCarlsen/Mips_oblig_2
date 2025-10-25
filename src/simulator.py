@@ -44,6 +44,7 @@ def decoder(pc_instructions):
 
 def runSimulator(sim):
     # Replace this with your own main loop!
+
     counter = 0
     while (True):
         # print(sim.dataMemory.memory)
@@ -94,7 +95,6 @@ def runSimulator(sim):
 
 
 
-        counter = counter+1
 
 
 
