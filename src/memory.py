@@ -39,7 +39,7 @@ class Memory(CPUElement):
                     
                     continue
 
-                parts = line.strip().split()
+                parts = line.strip().split("\t")
                 if len(parts) < 2:
                     continue
 
@@ -48,7 +48,10 @@ class Memory(CPUElement):
                     value = int(parts[1], 16)    # hex string -> int
 
                     self.memory[address] =value
-                    
+                    # print(self.memory)
+                    # print(f"adress {hex(address)} value {hex(value)} ")
+
+                    # self.memory[address] = value
                 except ValueError:
                     # ignore malformed lines
                     continue
