@@ -89,6 +89,15 @@ class MIPSSimulator():
             
         )
 
+        self.instructionMemory.connect(
+            [(self.pc, 'pcAddress')],
+            ['instruction'],   # <-- Dette er output-navnet du skal bruke!
+            [],
+            []
+        )
+
+        
+
     def startAddress(self):
         '''
         Returns first instruction from instruction memory

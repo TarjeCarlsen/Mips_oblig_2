@@ -63,3 +63,20 @@ class InstructionMemory(Memory):
         else:
             print("Decoder: Could not decode instructions!")
 
+        # Remove this and replace with your implementation!
+
+        self.input = list(self.inputValues.keys())[0]
+        self.instruction = outputValueNames[0]
+
+        # raise AssertionError("connect not implemented in class InstructionMemory!")
+    
+    def writeOutput(self):
+        # Remove this and replace with your implementation!
+
+        pc = self.inputValues[self.input]
+
+        instructions = self.memory.get(pc, 0)
+
+        self.outputValues[self.instruction] = instructions
+
+        # raise AssertionError("writeOutput not implemented in class InstructionMemory!")
