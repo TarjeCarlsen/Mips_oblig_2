@@ -84,7 +84,7 @@ class MIPSSimulator():
 
         self.instructionMemory.connect(
             [(self.pc, 'pcAddress')],
-            ['instruction'],   # <-- Dette er output-navnet du skal bruke!
+            ['instruction'],
             [],
             []
         )
