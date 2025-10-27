@@ -3,11 +3,22 @@ from cpuElement import CPUElement
 
 class Controller(CPUElement):
 
-    def connect(self, input, outputValueNames, control, outputSignalNames):
-        return super().connect(input, outputValueNames, control, outputSignalNames)
-    
+    def connect(self, inputSources, outputValueNames, control, outputSignalNames):
+        CPUElement.connect(self, inputSources, outputValueNames, control, outputSignalNames)
+        assert(len(inputSources) == 1), 'Controller should have one inputs'
+        assert(len(outputValueNames) == 1), 'Controller has only one output'
+        assert(len(control) == 0), 'Controller has no control signals'
+        assert(len(outputSignalNames) == 1), 'Controller should have one control output'
 
-    def controller(decoded_instr):
+        self.decoded_instr = inputSources[0][1]
+        self.control_name = outputSignalNames[0]
+    
+    def writeOutput(self):
+        decoded_instr = self.inputValues[self.decoded_instr]
+        control_signals = self.controller(decoded_instr)
+        self.outputControlSignals[self.control_name] = control_signals
+
+    def controller(self, decoded_instr):
         opcode = decoded_instr["opcode"]
         funct = decoded_instr.get("funct", None)
         ctrl_signals = {
@@ -19,7 +30,7 @@ class Controller(CPUElement):
             "RegWrite": 0,
             "ALUSrc": 0,
             "MemWrite": 0,
-            "Jumo": 0
+            "Jump": 0
         }
     # R type instructions
         if opcode == 0x00 and funct == 0x20:
@@ -65,12 +76,12 @@ class Controller(CPUElement):
             ctrl_signals["ALUOp"] = "addiu"
         elif opcode == 0x23:
             ctrl_signals["RegWrite"] = 1
-            ctrl_signals["AluSrc"] = 1
+            ctrl_signals["ALUSrc"] = 1
             ctrl_signals["MemRead"] = 1
             ctrl_signals["MemToReg"] = 1
             ctrl_signals["ALUOp"] = "lw"
         elif opcode == 0x2B:
-            ctrl_signals["AluSrc"] = 1
+            ctrl_signals["ALUSrc"] = 1
             ctrl_signals["MemWrite"] = 1
             ctrl_signals["ALUOp"] = "sw"
         elif opcode == 0x04:

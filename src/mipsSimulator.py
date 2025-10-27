@@ -5,6 +5,7 @@ Code written for inf-2200, University of Tromso
 from pc import PC
 from add import Add
 from mux import Mux
+from controller import Controller
 from registerFile import RegisterFile
 from instructionMemory import InstructionMemory
 from dataMemory import DataMemory
@@ -33,9 +34,11 @@ class MIPSSimulator():
         self.mux = Mux()
         self.adder = Add()
         self.pc = PC(self.startAddress())
+        self.controller = Controller()
 
         self.elements = [self.constant3, self.constant4,
-                         self.randomControl, self.adder, self.mux]
+                         self.randomControl, self.adder, self.mux,
+                         self.instructionMemory, self.controller]
 
         self._connectCPUElements()
 
@@ -89,11 +92,11 @@ class MIPSSimulator():
             
         )
 
-        self.instructionMemory.connect(
-            [(self.pc, 'pcAddress')],
-            ['instruction'],
+        self.controller.connect(
+            [(self.instructionMemory, 'instruction')],
+            ['controlSignals'],
             [],
-            []
+            ['controlSignals']
         )
 
         

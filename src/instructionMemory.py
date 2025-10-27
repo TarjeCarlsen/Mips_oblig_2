@@ -14,10 +14,10 @@ class InstructionMemory(Memory):
     def connect(self, inputSources, outputValueNames, control, outputSignalNames):
         CPUElement.connect(self, inputSources, outputValueNames, control, outputSignalNames)
         
-        assert(len(inputSources) == 1), 'Instructionmemory should have one input'
-        assert(len(outputValueNames) == 1), 'Instructionmemory has only one output'
-        assert(len(control) == 0), 'Mux has no control signals'
-        assert(len(outputSignalNames) == 0), 'Instructionmemory does not have any control output'
+        assert(len(inputSources) == 1), 'InstructionMemory should have one input'
+        assert(len(outputValueNames) == 1), 'InstructionMemory has only one output'
+        assert(len(control) == 0), 'InstructionMemory has no control signals'
+        assert(len(outputSignalNames) == 0), 'InstructionMemory does not have any control output'
 
         self.input = inputSources[0][1]
         self.instruction = outputValueNames[0]
@@ -25,12 +25,15 @@ class InstructionMemory(Memory):
     
     def writeOutput(self):
       pc = self.inputValues[self.input]
+
       converted_adress = (pc - (pc % 4))
       instr = self.memory.get(converted_adress, 0)
-      self.outputValues[self.instruction] = instr
+
+      decoded_instr = self.decoder(instr)
+      self.outputValues[self.instruction] = decoded_instr
 
 
-    def decoder(pc_instructions):
+    def decoder(self, pc_instructions):
         # Segment the bit string and figure out what kind of instruction this is
         opcode = (pc_instructions >> 26) & 0x3f
 
@@ -61,22 +64,6 @@ class InstructionMemory(Memory):
                     "rs": rs, "rt": rt, "imm": imm}
         
         else:
-            print("Decoder: Could not decode instructions!")
+            return {"instruction_type": "unknown", "instruction": pc_instructions}
 
-        # Remove this and replace with your implementation!
-
-        self.input = list(self.inputValues.keys())[0]
-        self.instruction = outputValueNames[0]
-
-        # raise AssertionError("connect not implemented in class InstructionMemory!")
-    
-    def writeOutput(self):
-        # Remove this and replace with your implementation!
-
-        pc = self.inputValues[self.input]
-
-        instructions = self.memory.get(pc, 0)
-
-        self.outputValues[self.instruction] = instructions
-
-        # raise AssertionError("writeOutput not implemented in class InstructionMemory!")
+        

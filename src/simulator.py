@@ -5,83 +5,75 @@ Code written for inf-2200, University of Tromso
 import sys
 from mipsSimulator import MIPSSimulator
 
-def decoder(pc_instructions):
-    # Segment the bit string and figure out what kind of instruction this is
-    opcode = (pc_instructions >> 26) & 0x3f
+def runSimulator(sim, max_cycles=None, verbose=False):
+    """
+    Minimal simulation loop: call sim.tick() repeatedly until a break
+    is observed (via controller controlSignals) or until max_cycles is
+    reached. Returns number of cycles executed.
+    """
+    cycles = 0
+    try:
+        while True:
+            # Read PC before the tick so we know which instruction is being executed
+            try:
+                pc_val = sim.pc.currentAddress()
+            except Exception:
+                pc_val = None
 
-    if opcode == 0x00:
-        # The instruction is of type R
-        rs = (pc_instructions >> 21) & 0x1F
-        rt = (pc_instructions >> 16) & 0x1F
-        rd = (pc_instructions >> 11) & 0x1F
-        shamt = (pc_instructions >> 6) & 0x1F
-        funct = pc_instructions & 0x3F
+            # Align PC to word (multiple of 4)
+            if pc_val is not None:
+                pc_aligned = pc_val - (pc_val % 4)
+            else:
+                pc_aligned = None
 
-        return {"instruction_type": "R", "opcode": opcode, "rs": rs, "rt": rt, 
-                "rd": rd, "shamt": shamt, "funct": funct}
+            # Snapshot instruction word from instruction memory (may be 0)
+            instr_word = None
+            try:
+                if pc_aligned is not None:
+                    instr_word = sim.instructionMemory.memory.get(pc_aligned, 0)
+            except Exception:
+                instr_word = None
 
-    elif opcode in [0x02, 0x03]:
-        # The instruction is of type J
-        adress = pc_instructions & 0x3FFFFFF
-        return {"instruction_type": "J",
-                "opcode": opcode, "adress": adress}
+            # Execute one cycle
+            sim.tick()
+            cycles += 1
 
-    elif opcode in [0x08, 0x09, 0x0F, 0x23, 0x2B, 0x04, 0x05, 0x0D]: 
-        # The instruction is of type I
-        rs = (pc_instructions >> 21) & 0x1F
-        rt = (pc_instructions >> 16) & 0x1F
-        imm = pc_instructions & 0xFFFF
+            # After tick, read decoded instruction and control signals (if produced)
+            decoded = None
+            ctrl = None
+            try:
+                decoded = sim.instructionMemory.outputValues.get('instruction')
+            except Exception:
+                decoded = None
 
-        return {"instruction_type": "I", "opcode": opcode, 
-                "rs": rs, "rt": rt, "imm": imm}
-    
-    else:
-        print("Decoder: Could not decode instructions!")
+            try:
+                ctrl = sim.controller.outputControlSignals.get('controlSignals')
+            except Exception:
+                ctrl = None
 
+            # Print one line per cycle: PC, raw instr, decoded instr, control signals
+            if pc_aligned is not None:
+                print(f"PC=0x{pc_aligned:08X}\tInstr=0x{(instr_word or 0):08X}\tDecoded={decoded}\tControl={ctrl}")
+            else:
+                print(f"PC=None\tDecoded={decoded}\tControl={ctrl}")
 
+            # Stop if controller signalled break
+            if isinstance(ctrl, dict) and (ctrl.get('Break') == 1 or ctrl.get('ALUOp') == 'break'):
+                if verbose:
+                    print(f"Break encountered at cycle {cycles}")
+                break
 
+            if max_cycles is not None and cycles >= max_cycles:
+                if verbose:
+                    print(f"Reached max_cycles={max_cycles}, stopping.")
+                break
 
+            if verbose and cycles % 100 == 0:
+                print(f"Cycle {cycles}")
+    except KeyboardInterrupt:
+        print(f"Interrupted by user after {cycles} cycles.")
 
-def runSimulator(sim):
-    # Replace this with your own main loop!
-
-    counter = 0
-    while (True):
-        # print(sim.dataMemory.memory)
-        pc_val = sim.pc.currentAddress()
-        converted_adress = (pc_val - (pc_val % 4))
-        memory = sim.instructionMemory.memory
-        instr = sim.instructionMemory.memory.get(converted_adress,0)
-        # print(f"PC={converted_adress}  Instr={hex(instr)}")
-        # print(sim.pc.currentAddress())
-        count = 0
-        
-        #for key,value in memory.items():
-        #    if(key == converted_adress):
-        #        print(f"count {count} key - {key} adress - {converted_adress}")
-        #
-        #        print(f"{hex(key)} - {hex(value)}")
-        #    count = count +1
-#
-        #if(converted_adress in memory):
-        #     print(f"pc value = {hex(pc_val)} found in memory")
-        #else:  
-        #     print(f"pc value = {hex(pc_val)} not found in memory")
-
-        pc_value = sim.pc.getOutputValue("pcAddress")
-
-        pc_instructions = sim.instructionMemory.getOutputValue("instruction")
-        print(f"PC: {converted_adress}  Instr: {hex(instr)}")
-        decoded_instructions = decoder(instr)
-
-        signals = controller(decoded_instructions)
-        # print(f"Instruksjon: {decoded_instructions}")
-        # print(f"Kontrollsignaler: {signals}")
-        if(signals.get("Break") == 1):
-            print("break encountered")
-            break
-        # print("Dekodet instruksjon:", decoded_instructions)
-        sim.tick()
+    return cycles
 
 
 
