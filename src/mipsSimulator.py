@@ -81,6 +81,13 @@ class MIPSSimulator():
             [],
             []
         )
+        self.instructionMemory.connect(
+            [(self.pc, 'pcAddress')],
+            ['instruction'],
+            [],
+            []
+            
+        )
 
         self.instructionMemory.connect(
             [(self.pc, 'pcAddress')],
