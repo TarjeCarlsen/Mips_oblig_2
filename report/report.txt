@@ -1,0 +1,29 @@
+1. Your name, email, GitHub username, and GitHub repository 
+
+ 
+
+2. Summary of the datapath and controllers you are simulating. 
+
+ 
+
+3. Description of data hazard handling approach including a discussion about the cost, complexity, and performance of the approach if implemented in hardware. 
+
+ 
+
+4. Controller hazard handling approach. 
+
+ 
+
+5. Description of the simulator implementation, including the functions you have implemented. 
+
+ 
+
+6. A detailed description of the test cases you have designed. 
+
+ 
+
+7. Summary of known bugs and problems, including a description of which of the provided tests fails (if any). 
+
+ 
+
+8. Declaration of large language model use, where you describe how you have used for example ChatGPT. 

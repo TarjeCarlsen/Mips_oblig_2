@@ -18,6 +18,9 @@ class Controller(CPUElement):
         control_signals = self.controller(decoded_instr)
         self.outputControlSignals[self.control_name] = control_signals
 
+        self.outputValues['instr'] = decoded_instr
+        self.outputControlSignals[self.control_name] = control_signals
+
     def controller(self, decoded_instr):
         opcode = decoded_instr["opcode"]
         funct = decoded_instr.get("funct", None)
