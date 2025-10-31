@@ -10,6 +10,7 @@ from registerFile import RegisterFile
 from instructionMemory import InstructionMemory
 from dataMemory import DataMemory
 from constant import Constant
+from ALU import ALU
 from randomControl import RandomControl
 import sys
 
@@ -30,16 +31,19 @@ class MIPSSimulator():
 
         self.constant3 = Constant(3)
         self.constant4 = Constant(4)
-        self.randomControl = RandomControl()
-        self.mux = Mux()
+        # self.randomControl = RandomControl()
+        # self.mux = Mux()
         self.adder = Add()
+        self.ALU = ALU()
         self.pc = PC(self.startAddress())
         self.controller = Controller()
 
-        self.elements = [self.constant3, self.constant4,
-                         self.randomControl, self.adder, self.mux,
-                         self.instructionMemory, self.controller, 
-                         self.registerFile, self.dataMemory]
+        self.elements = [ self.constant4,
+                        #  self.randomControl,
+                           self.adder,
+                            #  self.mux,
+                         self.instructionMemory, self.controller,self.registerFile,  self.ALU,
+                         self.dataMemory,self.pc]
 
         self._connectCPUElements()
 
@@ -58,12 +62,12 @@ class MIPSSimulator():
             []
         )
 
-        self.randomControl.connect(
-            [],
-            [],
-            [],
-            ['randomSignal']
-        )
+        # self.randomControl.connect(
+        #     [],
+        #     [],
+        #     [],
+        #     ['randomSignal']
+        # )
 
         self.adder.connect(
             [(self.pc, 'pcAddress'), (self.constant4, 'constant')],
@@ -72,26 +76,37 @@ class MIPSSimulator():
             []
         )
 
-        self.mux.connect(
-            [(self.adder, 'sum'), (self.constant3, 'constant')],
-            ['muxOut'],
-            [(self.randomControl, 'randomSignal')],
-            []
-        )
+        # self.mux.connect(
+        #     [(self.adder, 'sum'), (self.constant3, 'constant')],
+        #     ['muxOut'],
+        #     [(self.randomControl, 'randomSignal')],
+        #     []
+        # )
 
         self.pc.connect(
-            [(self.mux, 'muxOut')],
+            [(self.adder, 'sum')],
             ['pcAddress'],
             [],
             []
         )
-        self.instructionMemory.connect(
-            [(self.pc, 'pcAddress')],
-            ['instruction'],
+        self.adder.connect(
+            [(self.pc, 'pcAddress'), (self.constant4, 'constant')],
+            ['sum'],
             [],
             []
-            
         )
+        self.ALU.connect(
+            [(self.registerFile, 'readData_rs'),(self.registerFile, 'readData_rt')],
+            ['aluResult'],
+            [(self.controller, 'controlSignals')],
+            []
+    )
+        self.instructionMemory.connect(
+        [(self.pc, 'pcAddress')],
+        ['instruction'],
+        [],
+        []
+    )
 
         self.controller.connect(
             [(self.instructionMemory, 'instruction')],
@@ -99,14 +114,16 @@ class MIPSSimulator():
             [],
             ['controlSignals']
         )
+
         self.registerFile.connect(
-            [(self.controller, 'instr'), (self.mux, 'muxOut')],
+            [(self.instructionMemory, 'instruction'), (self.ALU, 'aluResult')],
             ['readData_rs', 'readData_rt'],
             [(self.controller, 'controlSignals')],
             []
         )
+
         self.dataMemory.connect(
-            [(self.adder, 'sum'), (self.mux, 'muxOut')],
+            [(self.adder, 'sum'), (self.ALU, 'aluResult')],
             ['read_data'],
             [(self.controller, 'controlSignals')],
             []
@@ -142,6 +159,7 @@ class MIPSSimulator():
 
     def printRegisterFile(self):
         self.registerFile.printAll()
+
 
     def tick(self):
         '''Execute one clock cycle of pipeline.'''

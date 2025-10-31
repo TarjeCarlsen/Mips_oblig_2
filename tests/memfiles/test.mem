@@ -1,0 +1,8 @@
+
+
+# structure:
+# 'TestName' 'destination(register/address)' 'value' 'exception'
+
+0x0000000000000000	0x20090014	addi $t1, $zero, 20
+0x0000000000000004	0x200A0005	addi $t2, $zero, 5
+0x0000000000000008	0x012A4820	add $t1, $t1, $t2

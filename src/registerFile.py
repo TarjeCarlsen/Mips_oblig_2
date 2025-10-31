@@ -65,14 +65,17 @@ class RegisterFile(CPUElement):
         else:
             writeReg = instr.get('rt', 0)
 
-        
-        writeData = None
-        writeData_input = getattr(self, 'writeData', None)
-        if writeData_input:
-            writeData = self.inputValues.get(writeData_input, None)
-
-        if writeData is None or int(writeReg) == 0:
+        writeData = self.inputValues.get(getattr(self, 'writeData', None), 0)
+        print(f"Writing to register {writeReg} value={writeData} (RegWrite={control_signals.get('RegWrite', 0)})")
+        if int(writeReg) == 0:
             return
+        # writeData = None
+        # writeData_input = getattr(self, 'writeData', None)
+        # if writeData_input:
+        #     writeData = self.inputValues.get(writeData_input, None)
+
+        # if writeData is None or int(writeReg) == 0:
+        #     return
         
 
 
