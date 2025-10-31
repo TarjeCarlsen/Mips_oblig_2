@@ -39,7 +39,7 @@ class MIPSSimulator():
         self.elements = [self.constant3, self.constant4,
                          self.randomControl, self.adder, self.mux,
                          self.instructionMemory, self.controller, 
-                         self.registerFile]
+                         self.registerFile, self.dataMemory]
 
         self._connectCPUElements()
 
@@ -103,7 +103,14 @@ class MIPSSimulator():
             [(self.controller, 'instr'), (self.mux, 'muxOut')],
             ['readData_rs', 'readData_rt'],
             [(self.controller, 'controlSignals')],
-            [])
+            []
+        )
+        self.dataMemory.connect(
+            [(self.adder, 'sum'), (self.mux, 'muxOut')],
+            ['read_data'],
+            [(self.controller, 'controlSignals')],
+            []
+        )
 
         
 

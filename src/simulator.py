@@ -5,7 +5,7 @@ Code written for inf-2200, University of Tromso
 import sys
 from mipsSimulator import MIPSSimulator
 
-def runSimulator(sim, max_cycles=1000):
+def runSimulator(sim, max_cycles=10):
     # Skriv startadresse
     print("Startadresse for PC:", hex(sim.pc.currentAddress()))
 

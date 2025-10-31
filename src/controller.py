@@ -11,6 +11,7 @@ class Controller(CPUElement):
         assert(len(outputSignalNames) == 1), 'Controller should have one control output'
 
         self.decoded_instr = inputSources[0][1]
+        print("Controller sin self.decoded_instr: "+ self.decoded_instr)
         self.control_name = outputSignalNames[0]
     
     def writeOutput(self):

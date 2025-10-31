@@ -5,6 +5,7 @@ Code written for inf-2200, University of Tromso
 import unittest
 from cpuElement import CPUElement
 import common
+from common import fromSignedWordToUnsignedWord
 
 
 class RegisterFile(CPUElement):
@@ -22,7 +23,7 @@ class RegisterFile(CPUElement):
 
     def connect(self, inputSources, outputValueNames, control, outputSignalNames):
         CPUElement.connect(self, inputSources, outputValueNames, control, outputSignalNames)
-        assert(len(inputSources) == 2), 'registerFile should have two inputs'
+        assert(len(inputSources) == 1 or len(inputSources) == 2), 'registerFile should have one or two inputs'
         assert(len(outputValueNames) == 2), 'registerFile should given two outputs'
         assert(len(control) == 1), 'registerFile should have one control source'
         # assert(len(outputSignalNames) == 1), 'registerFile should have one control input' 
@@ -38,26 +39,45 @@ class RegisterFile(CPUElement):
 
     def writeOutput(self):
         instr = self.inputValues.get(self.instr, {})
-        rs = instr.get('rs', 0)
-        rt = instr.get('rt', 0)
-        self.outputValues[self.rs] = self.register.get(rs, 0)
-        self.outputValues[self.rt] = self.register.get(rt, 0)
+        if isinstance(instr, dict):
+            rs = instr.get('rs', 0)
+            rt = instr.get('rt', 0)
+        else:
+            rs = 0
+            rt = 0
+
+        self.outputValues[self.rs] = fromSignedWordToUnsignedWord(self.register.get(rs, 0))
+        self.outputValues[self.rt] = fromSignedWordToUnsignedWord(self.register.get(rt, 0))
     
     def setControlSignals(self):
         control_signals = self.controlSignals.get(self.control_output, {})
+        if not control_signals:
+            return
+        if not control_signals.get('RegWrite', 0):
+            return
+        
+        instr = self.inputValues.get(self.instr, {})
+        if not isinstance(instr, dict):
+            return
 
-        if control_signals.get('regWrite', 0):
-            instr = self.inputValues.get(self.instr, {})
+        if control_signals.get('RegDst', 0):
+            writeReg = instr.get('rd', 0)
+        else:
+            writeReg = instr.get('rt', 0)
 
-            if instr.get('rd') == 0:
-                writeReg = instr.get('rd', 0)
-            if instr.get('rd') == 1:
-                writeReg = instr.get('rt', 0)
+        
+        writeData = None
+        writeData_input = getattr(self, 'writeData', None)
+        if writeData_input:
+            writeData = self.inputValues.get(writeData_input, None)
 
-            writeData = self.inputValues.get(self.writeData, None)
-            
-            if writeData == None:
-                return
+        if writeData is None or int(writeReg) == 0:
+            return
+        
+
+
+        self.register[writeReg] = fromSignedWordToUnsignedWord(writeData)
+        
             
 
 
