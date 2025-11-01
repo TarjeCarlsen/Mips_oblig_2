@@ -177,3 +177,4 @@ class MIPSSimulator():
             elem.setControlSignals()
 
         self.pc.readInput()
+        print("alu result:" , self.ALU.outputValues)
