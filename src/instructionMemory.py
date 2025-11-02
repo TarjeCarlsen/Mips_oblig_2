@@ -8,7 +8,12 @@ from cpuElement import CPUElement
 from memory import Memory
 
 class InstructionMemory(Memory):
+    #Reads a the current program counter and goes through the bits needed to decode with the shift operation.
+    # Decodes the 32 bit mips instruction into a dictionary of R, I, J fields
+    # exposes the dict output values
+
     def __init__(self, filename):
+        #Connects the module to the mips cpu elements. Assigns the expected amount of input and output signals from mip simulator
         Memory.__init__(self, filename)
     
     def connect(self, inputSources, outputValueNames, control, outputSignalNames):
@@ -24,6 +29,7 @@ class InstructionMemory(Memory):
 
     
     def writeOutput(self):
+      # Gets the current program counter and sets the output dictionary to the decoded values
       pc = self.inputValues[self.input]
 
       converted_adress = (pc - (pc % 4))
@@ -34,11 +40,11 @@ class InstructionMemory(Memory):
 
 
     def decoder(self, pc_instructions):
-        # Segment the bit string and figure out what kind of instruction this is
+        # decodes the instructions fetched from the program counter. Uses the shift operation to get the op code from the 32 bit mips instruction.
+        # selects corresponding instruction based on the op code. Choses the registeres based on the bits sent in 
         opcode = (pc_instructions >> 26) & 0x3f
 
-        if opcode == 0x00:
-            # The instruction is of type R
+        if opcode == 0x00:  # The instruction is of type R
             rs = (pc_instructions >> 21) & 0x1F
             rt = (pc_instructions >> 16) & 0x1F
             rd = (pc_instructions >> 11) & 0x1F
@@ -48,14 +54,12 @@ class InstructionMemory(Memory):
             return {"instruction_type": "R", "opcode": opcode, "rs": rs, "rt": rt, 
                     "rd": rd, "shamt": shamt, "funct": funct}
 
-        elif opcode in [0x02, 0x03]:
-            # The instruction is of type J
+        elif opcode in [0x02, 0x03]:    # The instruction is of type J
             adress = pc_instructions & 0x3FFFFFF
             return {"instruction_type": "J",
                     "opcode": opcode, "adress": adress}
 
-        elif opcode in [0x08, 0x09, 0x0F, 0x23, 0x2B, 0x04, 0x05, 0x0D]: 
-            # The instruction is of type I
+        elif opcode in [0x08, 0x09, 0x0F, 0x23, 0x2B, 0x04,0x05,0x0D]: # The instruction is of type I
             rs = (pc_instructions >> 21) & 0x1F
             rt = (pc_instructions >> 16) & 0x1F
             imm = pc_instructions & 0xFFFF

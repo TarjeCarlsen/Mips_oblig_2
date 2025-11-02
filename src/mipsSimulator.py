@@ -47,7 +47,7 @@ class MIPSSimulator():
 
         self._connectCPUElements()
 
-    def _connectCPUElements(self):
+    def _connectCPUElements(self): # connects the various components to the mips simulator
         self.constant3.connect(
             [],
             ['constant'],
@@ -61,13 +61,6 @@ class MIPSSimulator():
             [],
             []
         )
-
-        # self.randomControl.connect(
-        #     [],
-        #     [],
-        #     [],
-        #     ['randomSignal']
-        # )
 
         self.adder.connect(
             [(self.pc, 'pcAddress'), (self.constant4, 'constant')],
@@ -95,7 +88,7 @@ class MIPSSimulator():
             [],
             []
         )
-        self.ALU.connect(
+        self.ALU.connect( 
             [(self.registerFile, 'readData_rs'),(self.registerFile, 'readData_rt')],
             ['aluResult'],
             [(self.controller, 'controlSignals')],
@@ -161,7 +154,7 @@ class MIPSSimulator():
         self.registerFile.printAll()
 
 
-    def tick(self):
+    def tick(self): #runs through all the elements in the CPUelements.
         '''Execute one clock cycle of pipeline.'''
 
         self.nCycles += 1
@@ -177,4 +170,3 @@ class MIPSSimulator():
             elem.setControlSignals()
 
         self.pc.readInput()
-        print("alu result:" , self.ALU.outputValues)
