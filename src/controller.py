@@ -2,6 +2,8 @@
 from cpuElement import CPUElement
 
 class Controller(CPUElement):
+    #Sets what control signals should be used and makes them available through the output
+    # Goes through the input instruction and choses which control signals it should output as 1 and 0
 
     def connect(self, inputSources, outputValueNames, control, outputSignalNames):
         CPUElement.connect(self, inputSources, outputValueNames, control, outputSignalNames)
@@ -11,20 +13,20 @@ class Controller(CPUElement):
         assert(len(outputSignalNames) == 1), 'Controller should have one control output'
 
         self.decoded_instr = inputSources[0][1]
-        # print("Controller sin self.decoded_instr: "+ self.decoded_instr)
         self.control_name = outputSignalNames[0]
     
     def writeOutput(self):
+        #Sets the control signals by running the decoded instructions through the controller method
+        #Sets the output values for the control signals
         decoded_instr = self.inputValues[self.decoded_instr]
         control_signals = self.controller(decoded_instr)
-        control_signals["instr"] = decoded_instr
-        self.outputControlSignals[self.control_name] = control_signals
 
         self.outputValues['instr'] = decoded_instr
         self.outputValues[self.control_name] = control_signals
         self.outputControlSignals[self.control_name] = control_signals
 
     def controller(self, decoded_instr):
+        #choses whas control signals should be turned on (1) based on the decoded instruction
         opcode = decoded_instr["opcode"]
         funct = decoded_instr.get("funct", None)
         ctrl_signals = {

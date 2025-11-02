@@ -22,6 +22,8 @@ class RegisterFile(CPUElement):
             self.register[i] = 0
 
     def connect(self, inputSources, outputValueNames, control, outputSignalNames):
+        #connects the register to the simulator and sets expected input, output and controll signals.
+
         CPUElement.connect(self, inputSources, outputValueNames, control, outputSignalNames)
         assert(len(inputSources) == 1 or len(inputSources) == 2), 'registerFile should have one or two inputs'
         assert(len(outputValueNames) == 2), 'registerFile should given two outputs'
@@ -38,6 +40,7 @@ class RegisterFile(CPUElement):
         self.rt = outputValueNames[1]
 
     def writeOutput(self):
+        #sets the output registers
         instr = self.inputValues.get(self.instr, {})
         if isinstance(instr, dict):
             rs = instr.get('rs', 0)
@@ -57,26 +60,17 @@ class RegisterFile(CPUElement):
             return
         
         instr = self.inputValues.get(self.instr, {})
-        if not isinstance(instr, dict):
-            return
 
         if control_signals.get('RegDst', 0):
             writeReg = instr.get('rd', 0)
         else:
             writeReg = instr.get('rt', 0)
 
-        writeData = self.inputValues.get(getattr(self, 'writeData', None), 0)
-        print(f"Writing to register {writeReg} value={writeData} (RegWrite={control_signals.get('RegWrite', 0)})")
-        if int(writeReg) == 0:
-            return
-        # writeData = None
-        # writeData_input = getattr(self, 'writeData', None)
-        # if writeData_input:
-        #     writeData = self.inputValues.get(writeData_input, None)
-
-        # if writeData is None or int(writeReg) == 0:
-        #     return
-        
+        write_key = getattr(self, 'writeData', None)
+        if write_key is None:
+            writeData = 0 
+        else:
+            writeData = self.inputValues.get(write_key, 0)
 
 
         self.register[writeReg] = fromSignedWordToUnsignedWord(writeData)
@@ -85,7 +79,7 @@ class RegisterFile(CPUElement):
 
 
 
-    def printAll(self):
+    def printAll(self): #prints all the registers
         '''
         Print the name and value in e ach register.
         '''

@@ -9,7 +9,6 @@ from memory import Memory
 import common
 from common import fromSignedWordToUnsignedWord
 
-#USED FOR SW AND LW. DELETE THIS COMMENT WHEN FINISHING ASSIGNEMENT
 
 class DataMemory(Memory): 
     def __init__(self, filename):
@@ -35,14 +34,10 @@ class DataMemory(Memory):
         address = self.inputValues.get(self.address, 0)
         aligned_adress = address - (address % 4)
 
-        # Minnelesing
-
         if control_signals.get('MemRead', 0):
             readValue = self.memory.get(aligned_adress, 0)
 
             self.outputValues[self.readData] = fromSignedWordToUnsignedWord(readValue)
-           
-        # Minneskriving
 
         if control_signals.get('MemWrite', 0):
            writeData = self.inputValues.get(self.writeData, None)

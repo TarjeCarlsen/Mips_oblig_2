@@ -18,7 +18,6 @@ class Memory(CPUElement):
     def __init__(self, filename):
     
         # Dictionary mapping memory addresses to data
-        # Both key and value must be of type 'long'
         self.memory = {}
         
         self.initializeMemory(filename)
@@ -28,13 +27,9 @@ class Memory(CPUElement):
         Helper function that reads initializes the data memory by reading input
         data from a file.
         '''
-        # Remove this and replace with your implementation!
-        # Implementation MUST populate the dictionary in self.memory!
         
         with open(filename, "r") as f:
             for line in f:
-                # line = line.strip()
-                # skip empty lines or pure comments
                 if not line.strip() or line.strip().startswith("#"):
                     
                     continue
@@ -44,16 +39,12 @@ class Memory(CPUElement):
                     continue
 
                 try:
-                    address = int(parts[0], 16)  # hex string -> int
-                    value = int(parts[1], 16)    # hex string -> int
+                    address = int(parts[0], 16)
+                    value = int(parts[1], 16)  
 
                     self.memory[address] =value
-                    # print(self.memory)
-                    # print(f"adress {hex(address)} value {hex(value)} ")
 
-                    # self.memory[address] = value
                 except ValueError:
-                    # ignore malformed lines
                     continue
         
     def printAll(self):

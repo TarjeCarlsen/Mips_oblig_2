@@ -1,6 +1,7 @@
 from cpuElement import CPUElement
 
 class ALU(CPUElement):
+    #Performs arithmetic operations. Not finished, currently only performing add, addu, addi, addiu operations used for testing.
     def connect(self, inputSources, outputValueNames, control, outputSignalNames):
         CPUElement.connect(self, inputSources, outputValueNames, control, outputSignalNames)
         assert len(inputSources) == 2, 'ALU needs two inputs'
@@ -20,12 +21,10 @@ class ALU(CPUElement):
         a = self.inputValues.get(self.a, 0)
         b = self.inputValues.get(self.b, 0)
 
-        if alu_src == 1:
+        if alu_src == 1: #used in testing with immediate instruction, something that was removed, but would still be implemented if a working solution were found.
             instr = control.get("instr", {})
-            if isinstance(instr, dict) and "imm" in instr:
+            if "imm" in instr:
                 b = instr["imm"]
-
-        print(f"TESTING\nALU: op={op}, ALUSrc={alu_src}, a={a}, b={b}")
 
 
         if op in ("add", "addu", "addi", "addiu"):
@@ -35,5 +34,4 @@ class ALU(CPUElement):
         else:
             result = 0
 
-        print("result=", result)
         self.outputValues[self.output] = result & 0xffffffff
